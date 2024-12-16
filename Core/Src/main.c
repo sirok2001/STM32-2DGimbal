@@ -71,9 +71,9 @@ int32_t gyroRaw [3] = {0}; //x, y, z
 int16_t accelError [3] = {0};
 int16_t gyroError [3] = {0};
 
-float g[3] = {0, 0, 0}; //x, y, z
-float angVel[3] = {0, 0, 0}; //x, y, z
-float angle[3] = {0, 0, 0}; //x, y, z
+float g[3] = {0, 0, 0}; //current g load: x, y, z
+float angVel[3] = {0, 0, 0}; //angular velocity: x, y, z
+float angle[3] = {0, 0, 0}; //current angle: x, y, z
 
 unsigned long prevTick = 0;
 
@@ -173,14 +173,11 @@ static void GetAngle(void){
 }
 
 //sets servo position in degrees for a given axis
-static void Servo_deg(float deg, bool axis){
+static void ServoX_deg(float deg){
 	float pulse;
 	deg > 180? deg = 180 : deg;
 	pulse = 500 + deg * SERVO_GAIN;
-	if(!axis)
-		TIM2->CCR1 = (unsigned int)pulse;
-	else
-		TIM2->CCR4 = (unsigned int)pulse;
+	TIM2->CCR1 = (unsigned int)pulse;
 }
 
 static void ServoY_deg(float deg){
@@ -250,7 +247,7 @@ int main(void)
 	  if(dataReady){
 		  GetAngle();
 		  dataReady = false;
-		  Servo_deg((angle[0] + 90), 0);
+		  ServoX_deg(angle[0] + 90);
 		  ServoY_deg(angle[1] + 90);
 	  }
   }
